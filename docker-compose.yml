@@ -1,9 +1,55 @@
-# 
-# docker-compose.yml — определяет сервисы для разработки и тестирования.
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: bankcards-postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME:-bankcards}
+      POSTGRES_USER: ${DB_USERNAME:-bankcards_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-bankcards_password}
+    ports:
+      - "${DB_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - bankcards-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-bankcards_user} -d ${DB_NAME:-bankcards}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-Что нужно сделать:
-  - Настроить сервисы для:
-      - PostgreSQL (или MySQL) с начальной базой.
-      - Приложения Spring Boot (если нужно).
-  - Открыть нужные порты (например, 5432, 8080).
-  - Настроить volume для хранения данных БД.
+  bankcards-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bankcards-app
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-bankcards}
+      DB_USERNAME: ${DB_USERNAME:-bankcards_user}
+      DB_PASSWORD: ${DB_PASSWORD:-bankcards_password}
+      JWT_SECRET: ${JWT_SECRET:-mySecretKey123456789012345678901234567890}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
+      SERVER_PORT: ${SERVER_PORT:-8080}
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bankcards-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  bankcards-network:
+    driver: bridge

@@ -1,0 +1,70 @@
+# Build artifacts
+target/
+build/
+out/
+bin/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Environment
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# IDE files
+.idea/
+.vscode/
+.settings/
+.project
+.classpath
+*.iml
+*.ipr
+*.iws
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Test files
+src/test/
+test-results/
+coverage/
+
+# Security
+*.key
+*.pem
+*.p12
+*.jks
+secrets/
+credentials/
+
+# Maven wrapper (optional - keep if needed for build)
+.mvn/
+mvnw
+mvnw.cmd
