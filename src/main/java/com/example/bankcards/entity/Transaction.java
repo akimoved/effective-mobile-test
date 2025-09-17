@@ -125,10 +125,11 @@ public class Transaction {
 
     /**
      * Возвращает маскированную информацию о картах для логирования
+     * Использует стандартную маску для зашифрованных номеров карт
      */
     public String getTransactionInfo() {
-        String fromCardMasked = fromCard != null ? fromCard.getMaskedCardNumber() : "null";
-        String toCardMasked = toCard != null ? toCard.getMaskedCardNumber() : "null";
+        String fromCardMasked = fromCard != null ? "**** **** **** ****" : "null";
+        String toCardMasked = toCard != null ? "**** **** **** ****" : "null";
         return String.format("Transaction{id=%d, from=%s, to=%s, amount=%s, status=%s, date=%s, completed=%s}",
                 id, fromCardMasked, toCardMasked, amount, status, transactionDate, completedAt);
     }

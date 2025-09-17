@@ -26,6 +26,16 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     Page<Card> findByUserId(Long userId, Pageable pageable);
 
     /**
+     * Поиск карт пользователя с сортировкой по дате создания
+     */
+    Page<Card> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    /**
+     * Поиск всех карт с сортировкой по дате создания
+     */
+    Page<Card> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+    /**
      * Поиск карт пользователя по статусу
      */
     List<Card> findByUserIdAndStatus(Long userId, CardStatus status);

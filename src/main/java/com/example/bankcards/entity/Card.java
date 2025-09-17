@@ -52,7 +52,7 @@ public class Card {
 
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     @NotNull
-    @DecimalMin(value = "0.0", inclusive = true)
+    @DecimalMin(value = "0.0")
     @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 
@@ -91,17 +91,6 @@ public class Card {
     }
 
     // Вспомогательные методы
-    /**
-     * Возвращает маскированный номер карты в формате **** **** **** 1234
-     */
-    public String getMaskedCardNumber() {
-        if (cardNumber == null || cardNumber.length() < 4) {
-            return "****";
-        }
-        String lastFour = cardNumber.substring(cardNumber.length() - 4);
-        return "**** **** **** " + lastFour;
-    }
-
     /**
      * Проверяет, истек ли срок действия карты
      */
