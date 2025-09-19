@@ -1,8 +1,11 @@
-package com.example.bankcards.entity;
+package com.example.bankcards.entity.enums;
+
+import lombok.Getter;
 
 /**
  * Статусы транзакций
  */
+@Getter
 public enum TransactionStatus {
     PENDING("В обработке"),
     COMPLETED("Завершена"),
@@ -15,7 +18,4 @@ public enum TransactionStatus {
         this.displayName = displayName;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
 }

@@ -1,7 +1,7 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.response.AuthResponse;
-import com.example.bankcards.entity.RoleName;
+import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ class AuthServiceTest {
         String expectedToken = "jwt-token";
         long expectedExpiration = 86400000L;
 
-        when(userService.createUser(username, email, password, firstName, lastName, RoleName.USER)).thenReturn(testUser);
+        when(userService.createUser(username, email, password, firstName, lastName, RoleName.ROLE_USER)).thenReturn(testUser);
         when(userDetailsService.loadUserByUsername(testUser.getUsername())).thenReturn(userDetails);
         when(jwtService.generateToken(userDetails)).thenReturn(expectedToken);
         when(jwtService.getExpirationTime()).thenReturn(expectedExpiration);
@@ -73,7 +73,7 @@ class AuthServiceTest {
         assertEquals(expectedToken, result.token());
         assertEquals(expectedExpiration, result.expiresIn());
 
-        verify(userService).createUser(username, email, password, firstName, lastName, RoleName.USER);
+        verify(userService).createUser(username, email, password, firstName, lastName, RoleName.ROLE_USER);
         verify(userDetailsService).loadUserByUsername(testUser.getUsername());
         verify(jwtService).generateToken(userDetails);
     }

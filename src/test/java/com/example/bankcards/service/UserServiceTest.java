@@ -1,7 +1,7 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.entity.RoleName;
+import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UserAlreadyExistsException;
 import com.example.bankcards.exception.UserNotFoundException;
@@ -45,7 +45,7 @@ class UserServiceTest {
     void setUp() {
         userRole = Role.builder()
                 .id(1L)
-                .name(RoleName.USER)
+                .name(RoleName.ROLE_USER)
                 .build();
 
         testUser = User.builder()
@@ -67,11 +67,11 @@ class UserServiceTest {
 
         when(userRepository.existsByUsername(username)).thenReturn(false);
         when(userRepository.existsByEmail(email)).thenReturn(false);
-        when(roleRepository.findByName(RoleName.USER)).thenReturn(Optional.of(userRole));
+        when(roleRepository.findByName(RoleName.ROLE_USER)).thenReturn(Optional.of(userRole));
         when(passwordEncoder.encode(password)).thenReturn(encodedPassword);
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
-        User result = userService.createUser(username, email, password, RoleName.USER);
+        User result = userService.createUser(username, email, password, RoleName.ROLE_USER);
 
         assertNotNull(result);
         verify(userRepository).existsByUsername(username);
@@ -86,7 +86,7 @@ class UserServiceTest {
         when(userRepository.existsByUsername(username)).thenReturn(true);
 
         assertThrows(UserAlreadyExistsException.class, () ->
-                userService.createUser(username, "email@test.com", "password", RoleName.USER));
+                userService.createUser(username, "email@test.com", "password", RoleName.ROLE_USER));
     }
 
     @Test
@@ -96,7 +96,7 @@ class UserServiceTest {
         when(userRepository.existsByEmail(email)).thenReturn(true);
 
         assertThrows(UserAlreadyExistsException.class, () ->
-                userService.createUser("username", email, "password", RoleName.USER));
+                userService.createUser("username", email, "password", RoleName.ROLE_USER));
     }
 
     @Test
@@ -152,13 +152,13 @@ class UserServiceTest {
     @Test
     void addRoleToUser_ShouldAddRole() {
         Long userId = 1L;
-        Role adminRole = Role.builder().id(2L).name(RoleName.ADMIN).build();
+        Role adminRole = Role.builder().id(2L).name(RoleName.ROLE_ADMIN).build();
         
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
-        when(roleRepository.findByName(RoleName.ADMIN)).thenReturn(Optional.of(adminRole));
+        when(roleRepository.findByName(RoleName.ROLE_ADMIN)).thenReturn(Optional.of(adminRole));
         when(userRepository.save(testUser)).thenReturn(testUser);
 
-        User result = userService.addRoleToUser(userId, RoleName.ADMIN);
+        User result = userService.addRoleToUser(userId, RoleName.ROLE_ADMIN);
 
         assertTrue(result.getRoles().contains(adminRole));
         verify(userRepository).save(testUser);
@@ -169,7 +169,7 @@ class UserServiceTest {
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
-        boolean result = userService.hasRole(userId, RoleName.USER);
+        boolean result = userService.hasRole(userId, RoleName.ROLE_USER);
 
         assertTrue(result);
     }
@@ -179,7 +179,7 @@ class UserServiceTest {
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.of(testUser));
 
-        boolean result = userService.hasRole(userId, RoleName.ADMIN);
+        boolean result = userService.hasRole(userId, RoleName.ROLE_ADMIN);
 
         assertFalse(result);
     }

@@ -4,8 +4,9 @@ import com.example.bankcards.dto.request.CardCreateRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.dto.request.CardUpdateRequest;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.entity.User;
+import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.DuplicateCardNumberException;
 import com.example.bankcards.repository.CardRepository;
@@ -169,7 +170,7 @@ public class CardService {
         log.info("Поиск карты по номеру для администратора: {}", username);
 
         User user = userService.findByUsername(username);
-        if (!userService.hasRole(user.getId(), com.example.bankcards.entity.RoleName.ADMIN)) {
+        if (!userService.hasRole(user.getId(), RoleName.ROLE_ADMIN)) {
             throw new AccessDeniedException("Недостаточно прав для выполнения операции");
         }
 
@@ -189,7 +190,7 @@ public class CardService {
         log.info("Получение всех карт для администратора: {}", username);
 
         User user = userService.findByUsername(username);
-        if (!userService.hasRole(user.getId(), com.example.bankcards.entity.RoleName.ADMIN)) {
+        if (!userService.hasRole(user.getId(), RoleName.ROLE_ADMIN)) {
             throw new AccessDeniedException("Недостаточно прав для выполнения операции");
         }
 
@@ -211,7 +212,7 @@ public class CardService {
     private void validateCardAccess(Card card, String username) {
         if (!card.getUser().getUsername().equals(username)) {
             User user = userService.findByUsername(username);
-            if (!userService.hasRole(user.getId(), com.example.bankcards.entity.RoleName.ADMIN)) {
+            if (!userService.hasRole(user.getId(), RoleName.ROLE_ADMIN)) {
                 throw new AccessDeniedException("Недостаточно прав для доступа к карте");
             }
         }

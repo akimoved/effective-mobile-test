@@ -1,7 +1,7 @@
 package com.example.bankcards.repository;
 
 import com.example.bankcards.entity.Transaction;
-import com.example.bankcards.entity.TransactionStatus;
+import com.example.bankcards.entity.enums.TransactionStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

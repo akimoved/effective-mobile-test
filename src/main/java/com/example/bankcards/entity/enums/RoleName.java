@@ -1,11 +1,14 @@
-package com.example.bankcards.entity;
+package com.example.bankcards.entity.enums;
+
+import lombok.Getter;
 
 /**
  * Роли пользователей в системе
  */
+@Getter
 public enum RoleName {
-    ADMIN("Администратор"),
-    USER("Пользователь");
+    ROLE_ADMIN("Администратор"),
+    ROLE_USER("Пользователь");
 
     private final String displayName;
 
@@ -13,7 +16,4 @@ public enum RoleName {
         this.displayName = displayName;
     }
 
-    public String getDisplayName() {
-        return displayName;
-    }
 }

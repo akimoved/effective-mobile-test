@@ -4,9 +4,10 @@ import com.example.bankcards.dto.response.BalanceResponse;
 import com.example.bankcards.dto.request.TransactionCreateRequest;
 import com.example.bankcards.dto.response.TransactionResponse;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardStatus;
+import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.entity.Transaction;
-import com.example.bankcards.entity.TransactionStatus;
+import com.example.bankcards.entity.enums.RoleName;
+import com.example.bankcards.entity.enums.TransactionStatus;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.InsufficientFundsException;
@@ -197,7 +198,7 @@ public class TransactionService {
         log.info("Получение всех транзакций администратором: {}", username);
 
         User user = userService.findByUsername(username);
-        if (!userService.hasRole(user.getId(), com.example.bankcards.entity.RoleName.ADMIN)) {
+        if (!userService.hasRole(user.getId(), RoleName.ROLE_ADMIN)) {
             throw new AccessDeniedException("Недостаточно прав для выполнения операции");
         }
 
@@ -316,7 +317,7 @@ public class TransactionService {
     private void validateCardAccess(Card card, String username) {
         if (!card.getUser().getUsername().equals(username)) {
             User user = userService.findByUsername(username);
-            if (!userService.hasRole(user.getId(), com.example.bankcards.entity.RoleName.ADMIN)) {
+            if (!userService.hasRole(user.getId(), RoleName.ROLE_ADMIN)) {
                 throw new AccessDeniedException("Недостаточно прав для доступа к карте");
             }
         }
@@ -332,7 +333,7 @@ public class TransactionService {
         boolean hasAccess = transaction.getFromCard().getUser().getId().equals(user.getId()) ||
                            transaction.getToCard().getUser().getId().equals(user.getId());
 
-        if (!hasAccess && !userService.hasRole(user.getId(), com.example.bankcards.entity.RoleName.ADMIN)) {
+        if (!hasAccess && !userService.hasRole(user.getId(), RoleName.ROLE_ADMIN)) {
             throw new AccessDeniedException("Недостаточно прав для доступа к транзакции");
         }
     }

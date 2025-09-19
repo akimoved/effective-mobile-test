@@ -1,7 +1,7 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.response.AuthResponse;
-import com.example.bankcards.entity.RoleName;
+import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class AuthService {
     public AuthResponse register(String username, String email, String password, String firstName, String lastName) {
         log.info("Регистрация пользователя: {}", username);
 
-        User createdUser = userService.createUser(username, email, password, firstName, lastName, RoleName.USER);
+        User createdUser = userService.createUser(username, email, password, firstName, lastName, RoleName.ROLE_USER);
         UserDetails userDetails = userDetailsService.loadUserByUsername(createdUser.getUsername());
         String token = jwtService.generateToken(userDetails);
 

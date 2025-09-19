@@ -1,7 +1,7 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.entity.RoleName;
+import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.UserAlreadyExistsException;
 import com.example.bankcards.exception.UserNotFoundException;
@@ -49,7 +49,7 @@ public class UserService {
         log.info("Создание пользователя: {}", username);
 
         if (userRepository.existsByUsername(username)) {
-            throw new UserAlreadyExistsException("Пользователь с именем '" + username + "' уже существует");
+            throw new UserAlreadyExistsException(USER_WITH_USERNAME + username + "' уже существует");
         }
 
         if (userRepository.existsByEmail(email)) {

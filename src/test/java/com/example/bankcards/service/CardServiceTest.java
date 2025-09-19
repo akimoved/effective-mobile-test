@@ -4,8 +4,8 @@ import com.example.bankcards.dto.request.CardCreateRequest;
 import com.example.bankcards.dto.response.CardResponse;
 import com.example.bankcards.dto.request.CardUpdateRequest;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardStatus;
-import com.example.bankcards.entity.RoleName;
+import com.example.bankcards.entity.enums.CardStatus;
+import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.DuplicateCardNumberException;
@@ -148,7 +148,7 @@ class CardServiceTest {
         when(cardRepository.findById(1L)).thenReturn(Optional.of(testCard));
         when(userService.findByUsername("otheruser")).thenReturn(
                 User.builder().id(2L).username("otheruser").build());
-        when(userService.hasRole(2L, RoleName.ADMIN)).thenReturn(false);
+        when(userService.hasRole(2L, RoleName.ROLE_ADMIN)).thenReturn(false);
 
         assertThrows(AccessDeniedException.class, 
                 () -> cardService.getCard(1L, "otheruser"));
@@ -226,7 +226,7 @@ class CardServiceTest {
         String maskedCardNumber = "**** **** **** 3456";
         
         when(userService.findByUsername("admin")).thenReturn(adminUser);
-        when(userService.hasRole(2L, RoleName.ADMIN)).thenReturn(true);
+        when(userService.hasRole(2L, RoleName.ROLE_ADMIN)).thenReturn(true);
         when(encryptionService.encrypt("1234567890123456")).thenReturn(encryptedCardNumber);
         when(cardRepository.findByCardNumber(encryptedCardNumber)).thenReturn(Optional.of(testCard));
         when(encryptionService.decrypt(testCard.getCardNumber())).thenReturn("1234567890123456");
@@ -237,7 +237,7 @@ class CardServiceTest {
         assertNotNull(result);
         assertEquals(testCard.getId(), result.id());
         assertEquals(maskedCardNumber, result.cardNumber());
-        verify(userService).hasRole(2L, RoleName.ADMIN);
+        verify(userService).hasRole(2L, RoleName.ROLE_ADMIN);
         verify(encryptionService).encrypt("1234567890123456");
         verify(cardRepository).findByCardNumber(encryptedCardNumber);
     }
@@ -246,7 +246,7 @@ class CardServiceTest {
     void findByCardNumber_ShouldThrowException_WhenUserIsNotAdmin() {
         User regularUser = User.builder().id(2L).username("user").build();
         when(userService.findByUsername("user")).thenReturn(regularUser);
-        when(userService.hasRole(2L, RoleName.ADMIN)).thenReturn(false);
+        when(userService.hasRole(2L, RoleName.ROLE_ADMIN)).thenReturn(false);
 
         assertThrows(AccessDeniedException.class, 
                 () -> cardService.findByCardNumber("1234567890123456", "user"));
@@ -261,14 +261,14 @@ class CardServiceTest {
         Page<Card> cardPage = new PageImpl<>(List.of(testCard));
 
         when(userService.findByUsername("admin")).thenReturn(adminUser);
-        when(userService.hasRole(2L, RoleName.ADMIN)).thenReturn(true);
+        when(userService.hasRole(2L, RoleName.ROLE_ADMIN)).thenReturn(true);
         when(cardRepository.findAllByOrderByCreatedAtDesc(pageable)).thenReturn(cardPage);
 
         Page<CardResponse> result = cardService.getAllCards("admin", pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
-        verify(userService).hasRole(2L, RoleName.ADMIN);
+        verify(userService).hasRole(2L, RoleName.ROLE_ADMIN);
         verify(cardRepository).findAllByOrderByCreatedAtDesc(pageable);
     }
 
@@ -278,7 +278,7 @@ class CardServiceTest {
         Pageable pageable = PageRequest.of(0, 20);
 
         when(userService.findByUsername("user")).thenReturn(regularUser);
-        when(userService.hasRole(2L, RoleName.ADMIN)).thenReturn(false);
+        when(userService.hasRole(2L, RoleName.ROLE_ADMIN)).thenReturn(false);
 
         assertThrows(AccessDeniedException.class, 
                 () -> cardService.getAllCards("user", pageable));

@@ -1,6 +1,6 @@
 package com.example.bankcards.dto.response;
 
-import com.example.bankcards.entity.TransactionStatus;
+import com.example.bankcards.entity.enums.TransactionStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

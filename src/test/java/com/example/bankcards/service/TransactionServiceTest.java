@@ -4,10 +4,10 @@ import com.example.bankcards.dto.response.BalanceResponse;
 import com.example.bankcards.dto.request.TransactionCreateRequest;
 import com.example.bankcards.dto.response.TransactionResponse;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.entity.CardStatus;
-import com.example.bankcards.entity.RoleName;
+import com.example.bankcards.entity.enums.CardStatus;
+import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.Transaction;
-import com.example.bankcards.entity.TransactionStatus;
+import com.example.bankcards.entity.enums.TransactionStatus;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.CardNotFoundException;
 import com.example.bankcards.exception.InsufficientFundsException;
@@ -242,7 +242,7 @@ class TransactionServiceTest {
         
         when(transactionRepository.findById(1L)).thenReturn(Optional.of(testTransaction));
         when(userService.findByUsername("testuser")).thenReturn(testUser);
-        when(userService.hasRole(1L, RoleName.ADMIN)).thenReturn(false);
+        when(userService.hasRole(1L, RoleName.ROLE_ADMIN)).thenReturn(false);
 
         assertThrows(AccessDeniedException.class, 
                 () -> transactionService.getTransaction(1L, "testuser"));
@@ -342,14 +342,14 @@ class TransactionServiceTest {
         Page<Transaction> transactionPage = new PageImpl<>(List.of(testTransaction));
 
         when(userService.findByUsername("admin")).thenReturn(adminUser);
-        when(userService.hasRole(2L, RoleName.ADMIN)).thenReturn(true);
+        when(userService.hasRole(2L, RoleName.ROLE_ADMIN)).thenReturn(true);
         when(transactionRepository.findAll(pageable)).thenReturn(transactionPage);
 
         Page<TransactionResponse> result = transactionService.getAllTransactions("admin", pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
-        verify(userService).hasRole(2L, RoleName.ADMIN);
+        verify(userService).hasRole(2L, RoleName.ROLE_ADMIN);
         verify(transactionRepository).findAll(pageable);
     }
 
@@ -359,7 +359,7 @@ class TransactionServiceTest {
         Pageable pageable = PageRequest.of(0, 20);
 
         when(userService.findByUsername("user")).thenReturn(regularUser);
-        when(userService.hasRole(2L, RoleName.ADMIN)).thenReturn(false);
+        when(userService.hasRole(2L, RoleName.ROLE_ADMIN)).thenReturn(false);
 
         assertThrows(AccessDeniedException.class, 
                 () -> transactionService.getAllTransactions("user", pageable));
