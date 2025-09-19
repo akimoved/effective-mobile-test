@@ -3,11 +3,14 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.response.AuthResponse;
 import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.User;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,11 +48,12 @@ public class AuthService {
     public AuthResponse authenticate(String login, String password) {
         log.info("Попытка входа пользователя: {}", login);
 
-        authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(login, password)
         );
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(login);
+        log.info("Call UDS");
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtService.generateToken(userDetails);
 
         log.info("Пользователь {} успешно аутентифицирован", login);
@@ -73,6 +77,11 @@ public class AuthService {
      * Извлечение username из токена
      */
     public String extractUsername(String token) {
-        return jwtService.extractUsername(token);
+        try {
+            return jwtService.extractUsername(token);
+        } catch (Exception e) {
+            log.warn("Ошибка извлечения username из токена: {}", e.getMessage());
+            return null;
+        }
     }
 }

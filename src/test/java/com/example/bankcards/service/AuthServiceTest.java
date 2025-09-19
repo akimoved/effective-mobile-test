@@ -4,6 +4,7 @@ import com.example.bankcards.dto.response.AuthResponse;
 import com.example.bankcards.entity.enums.RoleName;
 import com.example.bankcards.entity.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,6 +55,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Регистрация - успешное создание пользователя и токена")
     void register_ShouldCreateUserAndReturnToken() {
         String username = "newuser";
         String email = "new@example.com";
@@ -79,13 +82,18 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Аутентификация - успешная аутентификация и возврат токена")
     void authenticate_ShouldAuthenticateAndReturnToken() {
         String login = "testuser";
         String password = "password123";
         String expectedToken = "jwt-token";
         long expectedExpiration = 86400000L;
 
-        when(userDetailsService.loadUserByUsername(login)).thenReturn(userDetails);
+        Authentication authentication = mock(Authentication.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
         when(jwtService.generateToken(userDetails)).thenReturn(expectedToken);
         when(jwtService.getExpirationTime()).thenReturn(expectedExpiration);
 
@@ -96,11 +104,11 @@ class AuthServiceTest {
         assertEquals(expectedExpiration, result.expiresIn());
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(userDetailsService).loadUserByUsername(login);
         verify(jwtService).generateToken(userDetails);
     }
 
     @Test
+    @DisplayName("Валидация токена - валидный токен")
     void validateToken_ShouldReturnTrue_WhenTokenIsValid() {
         String token = "valid-token";
         String username = "testuser";
@@ -116,6 +124,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Валидация токена - невалидный токен")
     void validateToken_ShouldReturnFalse_WhenTokenIsInvalid() {
         String token = "invalid-token";
         String username = "testuser";
@@ -129,6 +138,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Валидация токена - обработка исключения")
     void validateToken_ShouldReturnFalse_WhenExceptionOccurs() {
         String token = "token";
         String username = "testuser";
@@ -141,6 +151,7 @@ class AuthServiceTest {
     }
 
     @Test
+    @DisplayName("Извлечение username из токена")
     void extractUsername_ShouldReturnUsername() {
         String token = "jwt-token";
         String expectedUsername = "testuser";

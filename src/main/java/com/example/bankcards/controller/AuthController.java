@@ -55,15 +55,17 @@ public class AuthController {
      * Проверка валидности токена
      */
     @PostMapping("/validate")
-    public ResponseEntity<Boolean> validateToken(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Boolean> validateToken(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.ok(false);
         }
-        
+
         String token = authHeader.substring(7);
         String username = authService.extractUsername(token);
         boolean isValid = authService.validateToken(token, username);
-        
+
         return ResponseEntity.ok(isValid);
     }
 }

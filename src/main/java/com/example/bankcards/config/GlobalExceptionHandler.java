@@ -1,9 +1,18 @@
-package com.example.bankcards.exception;
+package com.example.bankcards.config;
 
+import com.example.bankcards.exception.CardNotFoundException;
+import com.example.bankcards.exception.DuplicateCardNumberException;
+import com.example.bankcards.exception.EncryptionException;
+import com.example.bankcards.exception.InsufficientFundsException;
+import com.example.bankcards.exception.InvalidTransactionException;
+import com.example.bankcards.exception.TransactionNotFoundException;
+import com.example.bankcards.exception.UserAlreadyExistsException;
+import com.example.bankcards.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -99,6 +108,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception e) {
         log.error("Неожиданная ошибка: {}", e.getMessage(), e);
         return buildErrorResponse("Внутренняя ошибка сервера", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(BadCredentialsException e) {
+        log.warn("Неверные учетные данные: {}", e.getMessage());
+        return buildErrorResponse("Неверное имя пользователя или пароль", HttpStatus.UNAUTHORIZED);
     }
 
     private ResponseEntity<Map<String, Object>> buildErrorResponse(String message, HttpStatus status) {
