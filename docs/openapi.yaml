@@ -74,7 +74,7 @@ paths:
       parameters:
         - name: Authorization
           in: header
-          required: true
+          required: false
           schema:
             type: string
       responses:
@@ -282,7 +282,7 @@ paths:
       summary: Получение всех карт (только для администраторов)
       parameters:
         - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/AdminSizeParam'
       responses:
         '200':
           description: Список всех карт
@@ -454,7 +454,7 @@ paths:
       summary: Все транзакции (только для администраторов)
       parameters:
         - $ref: '#/components/parameters/PageParam'
-        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/AdminSizeParam'
       responses:
         '200':
           description: Список всех транзакций
@@ -493,6 +493,16 @@ components:
         minimum: 1
         maximum: 100
         default: 10
+
+    AdminSizeParam:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
 
   responses:
     BadRequest:
@@ -566,21 +576,22 @@ components:
 
     CardCreateRequest:
       type: object
-      required: [cardNumber, cardHolderName]
+      required: [cardNumber, cardholderName]
       properties:
         cardNumber:
           type: string
           minLength: 16
           maxLength: 19
-          pattern: '^[0-9]{16,19}$'
-        cardHolderName:
+          pattern: '^\\d{16}$'
+          description: "Номер карты должен содержать 16 цифр"
+        cardholderName:
           type: string
           maxLength: 100
 
     CardUpdateRequest:
       type: object
       properties:
-        cardHolderName:
+        cardholderName:
           type: string
           maxLength: 100
         status:
@@ -600,7 +611,6 @@ components:
           type: number
           format: decimal
           minimum: 0.01
-          maximum: 1000000
         description:
           type: string
           maxLength: 500
@@ -611,19 +621,9 @@ components:
       properties:
         token:
           type: string
-        username:
-          type: string
-        email:
-          type: string
-          format: email
-        firstName:
-          type: string
-        lastName:
-          type: string
-        roles:
-          type: array
-          items:
-            type: string
+        expiresIn:
+          type: integer
+          format: int64
 
     CardResponse:
       type: object
@@ -635,14 +635,8 @@ components:
           type: string
         cardholderName:
           type: string
-        expiryDate:
-          type: string
-          format: date
         status:
           $ref: '#/components/schemas/CardStatus'
-        balance:
-          type: number
-          format: decimal
         createdAt:
           type: string
           format: date-time

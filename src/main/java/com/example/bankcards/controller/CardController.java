@@ -59,7 +59,7 @@ public class CardController {
      */
     @GetMapping
     public ResponseEntity<Page<CardResponse>> getUserCards(
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault() Pageable pageable,
             Authentication authentication) {
         
         log.debug("Запрос карт пользователя: {}", authentication.getName());
@@ -123,20 +123,6 @@ public class CardController {
         
         cardService.deleteCard(cardId, authentication.getName());
         return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Поиск карты по номеру (только для администраторов)
-     */
-    @GetMapping("/search")
-    public ResponseEntity<CardResponse> findByCardNumber(
-            @RequestParam String cardNumber,
-            Authentication authentication) {
-        
-        log.info("Поиск карты по номеру администратором: {}", authentication.getName());
-        
-        CardResponse response = cardService.findByCardNumber(cardNumber, authentication.getName());
-        return ResponseEntity.ok(response);
     }
 
     /**
