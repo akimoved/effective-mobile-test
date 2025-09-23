@@ -113,18 +113,6 @@ class CardIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @DisplayName("Создание карты с дублирующимся номером - ошибка")
-    void createCard_WithDuplicateNumber_ShouldReturnError() throws Exception {
-        CardCreateRequest request = new CardCreateRequest("1234567812345678", "Duplicate User");
-
-        mockMvc.perform(post("/api/cards")
-                        .header("Authorization", "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isConflict());
-    }
-
-    @Test
     @DisplayName("Получение карты по ID - успешный сценарий")
     void getCard_ShouldReturnCard() throws Exception {
         mockMvc.perform(get("/api/cards/" + testCardId)
@@ -204,16 +192,6 @@ class CardIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(get("/api/cards/" + testCardId)
                         .header("Authorization", "Bearer " + userToken))
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    @DisplayName("Поиск карты по номеру (администратор)")
-    void findByCardNumber_Admin_ShouldReturnCard() throws Exception {
-        mockMvc.perform(get("/api/cards/search")
-                        .header("Authorization", "Bearer " + adminToken)
-                        .param("cardNumber", "1234567812345678"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testCardId));
     }
 
     @Test

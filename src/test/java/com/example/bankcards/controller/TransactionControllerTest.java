@@ -59,7 +59,6 @@ class TransactionControllerTest extends BaseIntegrationTest {
     @MockBean
     private EncryptionService encryptionService;
 
-    private User testUser;
     private User anotherUser;
     private Card testCard1;
     private Card testCard2;
@@ -72,7 +71,7 @@ class TransactionControllerTest extends BaseIntegrationTest {
         userRepository.deleteAll();
 
         // Создаем тестового пользователя
-        testUser = userService.createUser(
+        User testUser = userService.createUser(
                 "testuser",
                 "test@example.com",
                 "password123",
