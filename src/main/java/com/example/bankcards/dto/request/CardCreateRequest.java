@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 public record CardCreateRequest(
         @NotBlank(message = "Номер карты не может быть пустым")
         @Pattern(regexp = "\\d{16}", message = "Номер карты должен содержать 16 цифр")
+        @Size(min = 16, max = 19)
         String cardNumber,
         
         @NotBlank(message = "Имя держателя карты не может быть пустым")

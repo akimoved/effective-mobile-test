@@ -33,18 +33,17 @@ public class EncryptionService {
         try {
             byte[] iv = new byte[GCM_IV_LENGTH];
             secureRandom.nextBytes(iv);
-            
+
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, gcmParameterSpec);
-            
+
             byte[] encrypted = cipher.doFinal(cardNumber.getBytes());
-            
-            // Объединяем IV и зашифрованные данные
+
             byte[] encryptedWithIv = new byte[iv.length + encrypted.length];
             System.arraycopy(iv, 0, encryptedWithIv, 0, iv.length);
             System.arraycopy(encrypted, 0, encryptedWithIv, iv.length, encrypted.length);
-            
+
             return Base64.getEncoder().encodeToString(encryptedWithIv);
         } catch (Exception e) {
             throw new EncryptionException("Ошибка шифрования номера карты", e);
@@ -54,17 +53,16 @@ public class EncryptionService {
     public String decrypt(String encryptedCardNumber) {
         try {
             byte[] decodedData = Base64.getDecoder().decode(encryptedCardNumber);
-            
-            // Извлекаем IV и зашифрованные данные
+
             byte[] iv = new byte[GCM_IV_LENGTH];
             byte[] encrypted = new byte[decodedData.length - GCM_IV_LENGTH];
             System.arraycopy(decodedData, 0, iv, 0, iv.length);
             System.arraycopy(decodedData, iv.length, encrypted, 0, encrypted.length);
-            
+
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             GCMParameterSpec gcmParameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH * 8, iv);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, gcmParameterSpec);
-            
+
             byte[] decrypted = cipher.doFinal(encrypted);
             return new String(decrypted);
         } catch (Exception e) {

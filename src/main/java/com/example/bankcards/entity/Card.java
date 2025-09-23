@@ -32,7 +32,6 @@ public class Card {
 
     @Column(name = "card_number", unique = true, nullable = false)
     @NotBlank
-    @Size(min = 16, max = 19)
     @EqualsAndHashCode.Include
     private String cardNumber;
 
